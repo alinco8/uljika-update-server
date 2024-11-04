@@ -6,6 +6,7 @@ use std::{
     ops::{Deref, Sub},
     sync::Arc,
 };
+use tracing::info;
 
 struct Version(semver::Version);
 impl Deref for Version {
@@ -82,6 +83,7 @@ pub async fn latest(
 ) -> impl IntoResponse {
     Json(
         moka.get_with("/releases/latest".to_string(), async {
+            info!("Fetching latest release");
             get_latest_release(&client).await
         })
         .await,

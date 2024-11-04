@@ -1,9 +1,9 @@
 mod controller;
 
-use std::{env, net::SocketAddr};
+use std::{env, net::SocketAddr, time::Duration};
 
 use axum::{extract::Query, routing::get, Router};
-use controller::v1::releases::{DescriptionsQuery, LatestRelease};
+use controller::v1::releases::DescriptionsQuery;
 use tracing::info;
 
 #[tokio::main]
@@ -11,7 +11,9 @@ async fn main() {
     tracing_subscriber::fmt::init();
 
     let client = octocrab::instance();
-    let cache = moka::future::Cache::<String, LatestRelease>::new(10_000);
+    let cache = moka::future::CacheBuilder::new(10_000)
+        .time_to_live(Duration::from_secs(60))
+        .build();
 
     let app = Router::new()
         .route("/", get(controller::index))
