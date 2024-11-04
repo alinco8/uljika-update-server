@@ -33,11 +33,7 @@ async fn main() {
             }),
         );
 
-    let port = env::var("PORT")
-        .unwrap_or_else(|_| "3000".to_string())
-        .parse::<u16>()
-        .unwrap();
-    let listener = tokio::net::TcpListener::bind(SocketAddr::from(([127, 0, 0, 1], port)))
+    let listener = tokio::net::TcpListener::bind(SocketAddr::from(([127, 0, 0, 1], 8000)))
         .await
         .unwrap();
 
