@@ -1,6 +1,6 @@
 mod controller;
 
-use std::net::SocketAddr;
+use std::{env, net::SocketAddr};
 
 use axum::{extract::Query, routing::get, Router};
 use controller::v1::releases::{DescriptionsQuery, LatestRelease};
@@ -34,7 +34,12 @@ async fn main() {
             }),
         );
 
-    let listener = tokio::net::TcpListener::bind(SocketAddr::from(([127, 0, 0, 1], 8000)))
+    let port: u16 = env::var("PORT")
+        .unwrap_or("8000".to_string())
+        .parse()
+        .unwrap();
+
+    let listener = tokio::net::TcpListener::bind(SocketAddr::from(([0, 0, 0, 0], port)))
         .await
         .unwrap();
 
