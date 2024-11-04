@@ -104,8 +104,8 @@ impl Default for DescriptionsQuery {
 }
 pub async fn descriptions(
     query: Query<DescriptionsQuery>,
-    client: Arc<Octocrab>,
-    moka: Cache<String, LatestRelease>,
+    _client: Arc<Octocrab>,
+    _moka: Cache<String, LatestRelease>,
 ) -> impl IntoResponse {
     let Some(start) = &query.start else {
         return format!("Bad Request: param start is required").into_response();

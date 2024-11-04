@@ -1,6 +1,6 @@
 mod controller;
 
-use std::{env, net::SocketAddr};
+use std::net::SocketAddr;
 
 use axum::{extract::Query, routing::get, Router};
 use controller::v1::releases::{DescriptionsQuery, LatestRelease};
@@ -14,6 +14,7 @@ async fn main() {
     let cache = moka::future::Cache::<String, LatestRelease>::new(10_000);
 
     let app = Router::new()
+        .route("/", get(controller::index))
         .route(
             "/releases/latest",
             get({
