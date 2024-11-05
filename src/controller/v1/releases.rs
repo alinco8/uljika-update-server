@@ -75,8 +75,8 @@ impl Release {
         let signature_url = release
             .assets
             .iter()
-            .find(|asset| asset.name == "_aarch64.app.tar.gz.sig")
-            .ok_or(CustomError::new("Asset(_aarch64.app.tar.gz.sig) not found"))?
+            .find(|asset| asset.name.ends_with(".app.tar.gz.sig"))
+            .ok_or(CustomError::new("Asset(*.app.tar.gz.sig) not found"))?
             .browser_download_url
             .to_string();
 
@@ -85,8 +85,8 @@ impl Release {
         let url = release
             .assets
             .iter()
-            .find(|asset| asset.name == "_aarch64.app.tar.gz")
-            .ok_or(CustomError::new("Asset(_aarch64.app.tar.gz) not found"))?
+            .find(|asset| asset.name.ends_with(".app.tar.gz"))
+            .ok_or(CustomError::new("Asset(*.app.tar.gz) not found"))?
             .browser_download_url
             .to_string();
 
