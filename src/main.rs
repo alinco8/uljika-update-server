@@ -17,7 +17,7 @@ async fn main() {
         .time_to_live(Duration::from_secs(60))
         .build();
     let descriptions_cache = moka::future::CacheBuilder::new(10_000)
-        .time_to_live(Duration::from_secs(60 * 60))
+        .time_to_live(Duration::from_secs(60))
         .build();
 
     let app = Router::new()
