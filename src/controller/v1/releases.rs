@@ -119,7 +119,7 @@ pub async fn latest(
 ) -> impl IntoResponse {
     let latest = latest_cache
         .get_with("/releases/latest".to_string(), async {
-            info!("Fetching latest release");
+            info!("Fetching latest release...");
             get_latest_release(&client).await.unwrap()
         })
         .await;
