@@ -3,7 +3,7 @@ mod libs;
 
 use axum::{extract::Query, routing::get, Router};
 use controller::v1::releases::DescriptionsQuery;
-use std::{env, net::SocketAddr, time::Duration};
+use std::{env, net::SocketAddr, sync::Arc, time::Duration};
 use tower::ServiceBuilder;
 use tower_http::cors::{Any, CorsLayer};
 use tracing::info;
@@ -12,7 +12,14 @@ use tracing::info;
 async fn main() {
     tracing_subscriber::fmt::init();
 
-    let client = octocrab::instance();
+    println!("{:?}", env::var("TOKEN"));
+
+    let client = Arc::new(
+        octocrab::OctocrabBuilder::new()
+            .personal_token(env::var("TOKEN").unwrap_or("".to_string()))
+            .build()
+            .unwrap(),
+    );
     let latest_cache = moka::future::CacheBuilder::new(10_000)
         .time_to_live(Duration::from_secs(60))
         .build();
