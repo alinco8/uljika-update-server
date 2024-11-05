@@ -1,4 +1,5 @@
 mod controller;
+mod libs;
 
 use std::{env, net::SocketAddr, time::Duration};
 
@@ -11,8 +12,11 @@ async fn main() {
     tracing_subscriber::fmt::init();
 
     let client = octocrab::instance();
-    let cache = moka::future::CacheBuilder::new(10_000)
+    let latest_cache = moka::future::CacheBuilder::new(10_000)
         .time_to_live(Duration::from_secs(60))
+        .build();
+    let descriptions_cache = moka::future::CacheBuilder::new(10_000)
+        .time_to_live(Duration::from_secs(60 * 60))
         .build();
 
     let app = Router::new()
@@ -21,7 +25,7 @@ async fn main() {
             "/releases/latest",
             get({
                 let client = client.clone();
-                let cache = cache.clone();
+                let cache = latest_cache.clone();
                 move || controller::v1::releases::latest(client, cache)
             }),
         )
@@ -29,7 +33,7 @@ async fn main() {
             "/releases/descriptions",
             get({
                 let client = client.clone();
-                let cache = cache.clone();
+                let cache = descriptions_cache.clone();
                 move |query: Query<DescriptionsQuery>| {
                     controller::v1::releases::descriptions(query, client, cache)
                 }
