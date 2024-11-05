@@ -1,10 +1,11 @@
 mod controller;
 mod libs;
 
-use std::{env, net::SocketAddr, time::Duration};
-
 use axum::{extract::Query, routing::get, Router};
 use controller::v1::releases::DescriptionsQuery;
+use std::{env, net::SocketAddr, time::Duration};
+use tower::ServiceBuilder;
+use tower_http::cors::{Any, CorsLayer};
 use tracing::info;
 
 #[tokio::main]
@@ -38,7 +39,8 @@ async fn main() {
                     controller::v1::releases::descriptions(query, client, cache)
                 }
             }),
-        );
+        )
+        .layer(ServiceBuilder::new().layer(CorsLayer::new().allow_origin(Any)));
 
     let port: u16 = env::var("PORT")
         .unwrap_or("8000".to_string())
