@@ -169,7 +169,7 @@ pub async fn descriptions(
             let mut a = Vec::new();
             for f in releases.into_iter().filter_map(|release| {
                 let version = semver::Version::parse(&release.tag_name[5..]).unwrap();
-                if version >= **start && version <= **end {
+                if version > **start && version <= **end {
                     Some(Release::from_release(release))
                 } else {
                     None
