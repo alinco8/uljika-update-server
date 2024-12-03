@@ -6,6 +6,7 @@ use axum::{
 };
 use moka::future::Cache;
 use octocrab::Octocrab;
+use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::{
     ops::{Deref, Sub},
@@ -91,7 +92,7 @@ impl Release {
             .to_string();
 
         Ok(Self {
-            version: release.tag_name[1..].to_string(),
+            version: slice_version(&release.tag_name).to_string(),
             pub_date: release
                 .published_at
                 .map(|date| date.format("%+").to_string()),
@@ -168,7 +169,7 @@ pub async fn descriptions(
 
             let mut a = Vec::new();
             for f in releases.into_iter().filter_map(|release| {
-                let version = semver::Version::parse(&release.tag_name[1..]).unwrap();
+                let version = semver::Version::parse(slice_version(&release.tag_name)).unwrap();
                 if version > **start && version <= **end {
                     Some(Release::from_release(release))
                 } else {
@@ -183,4 +184,13 @@ pub async fn descriptions(
         .await;
 
     response::Json(c).into_response()
+}
+
+fn slice_version(tag: &str) -> &str {
+    let regex = Regex::new(r#"([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?"#).unwrap();
+
+    regex
+        .captures(tag)
+        .map(|c| c.get(0).unwrap().as_str())
+        .unwrap_or_default()
 }
