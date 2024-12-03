@@ -91,7 +91,7 @@ impl Release {
             .to_string();
 
         Ok(Self {
-            version: release.tag_name[5..].to_string(),
+            version: release.tag_name[1..].to_string(),
             pub_date: release
                 .published_at
                 .map(|date| date.format("%+").to_string()),
@@ -168,7 +168,7 @@ pub async fn descriptions(
 
             let mut a = Vec::new();
             for f in releases.into_iter().filter_map(|release| {
-                let version = semver::Version::parse(&release.tag_name[5..]).unwrap();
+                let version = semver::Version::parse(&release.tag_name[1..]).unwrap();
                 if version > **start && version <= **end {
                     Some(Release::from_release(release))
                 } else {
